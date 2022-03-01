@@ -1,0 +1,92 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  sam-swagger-api-sandbox
+
+  SAM Template for swagger generated API Sandbox
+
+Globals:
+  Function:
+    Timeout: 3
+
+Parameters:
+  SwaggerBucket:
+    Type: String
+    Description: The uploaded swagger.yaml
+  StageName:
+    Type: String
+    Description: The API stage name
+
+Resources:
+
+  SwaggerAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref StageName
+      Cors: "'*'"
+      DefinitionBody:
+        'Fn::Transform':
+          Name: 'AWS::Include'
+          Parameters:
+            Location: !Ref 'SwaggerBucket'
+
+  PythonFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: python
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Events:
+        ProxyApiRoot:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SwaggerAPI
+            Path: /python
+            Method: GET
+  PythonFunctionPermission:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref PythonFunction
+      Principal: apigateway.amazonaws.com
+
+  RubyFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ruby
+      Handler: app.handler
+      Runtime: ruby2.7
+      Events:
+        ProxyApiRoot:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SwaggerAPI
+            Path: /python
+            Method: GET
+  RubyFunctionPermission:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref RubyFunction
+      Principal: apigateway.amazonaws.com
+
+
+  NodeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: node
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Events:
+        ProxyApiRoot:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SwaggerAPI
+            Path: /python
+            Method: GET
+  NodeFunctionPermission:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref NodeFunction
+      Principal: apigateway.amazonaws.com
