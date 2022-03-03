@@ -29,11 +29,10 @@ Resources:
           Name: 'AWS::Include'
           Parameters:
             Location: !Ref 'SwaggerBucket'
-
-  PythonFunction:
+  UploadMovieFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: python
+      CodeUri: src/upload_movie
       Handler: app.lambda_handler
       Runtime: python3.8
       Events:
@@ -41,52 +40,73 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref SwaggerAPI
-            Path: /python
+            Path: /src/upload_movie
             Method: GET
-  PythonFunctionPermission:
+  UploadMovieFunctionPermission:
     Type: "AWS::Lambda::Permission"
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !Ref PythonFunction
+      FunctionName: !Ref UploadMovieFunction
       Principal: apigateway.amazonaws.com
 
-  RubyFunction:
+  ConvertMovieFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ruby
-      Handler: app.handler
-      Runtime: ruby2.7
+      CodeUri: src/convert_movie
+      Handler: app.lambda_handler
+      Runtime: python3.8
       Events:
         ProxyApiRoot:
           Type: Api
           Properties:
             RestApiId: !Ref SwaggerAPI
-            Path: /python
+            Path: /src/comvert_movie
             Method: GET
-  RubyFunctionPermission:
+  ConvertMovieFunctionPermission:
     Type: "AWS::Lambda::Permission"
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !Ref RubyFunction
+      FunctionName: !Ref ConvertMovieFunction
       Principal: apigateway.amazonaws.com
 
-
-  NodeFunction:
+  UpdateMovieFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: node
-      Handler: app.lambdaHandler
-      Runtime: nodejs14.x
+      CodeUri: src/update_movie
+      Handler: app.lambda_handler
+      Runtime: python3.8
       Events:
         ProxyApiRoot:
           Type: Api
           Properties:
             RestApiId: !Ref SwaggerAPI
-            Path: /python
+            Path: /src/update_movie
             Method: GET
-  NodeFunctionPermission:
+  UpdateMovieFunctionPermission:
     Type: "AWS::Lambda::Permission"
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !Ref NodeFunction
+      FunctionName: !Ref UpdateMovieFunction
       Principal: apigateway.amazonaws.com
+
+  GetMusicFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/get_music
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Events:
+        ProxyApiRoot:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SwaggerAPI
+            Path: /src/get_music
+            Method: GET
+  GetMusicFunctionPermission:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref GetMusicFunction
+      Principal: apigateway.amazonaws.com
+
+  
