@@ -1,5 +1,12 @@
+.PHONY: build
 build:
 	sam build
+
+build-ffmpeg:
+	mkdir -p build/layer/bin
+	rm -rf build/ffmpeg*
+	cd build && curl https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz | tar x
+	mv build/ffmpeg*/ffmpeg build/ffmpeg*/ffprobe build/layer/bin
 
 deploy-swagger:
 	aws s3 cp doc/swagger.yaml s3://${SANDBOX_API_APP_SWAGGER_BUCKET}/swagger.yaml

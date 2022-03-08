@@ -18,6 +18,16 @@ Parameters:
     Description: The API stage name
 
 Resources:
+  FFMPEGLambdaLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: ffmpeg 
+      Description: FFMPEG for AWS Lambda
+      ContentUri: build/layer
+      CompatibleRuntimes:
+        - python3.8
+      LicenseInfo: GPL-2.0-or-later
+      RetentionPolicy: Retain
 
   SwaggerAPI:
     Type: AWS::Serverless::Api
@@ -55,6 +65,8 @@ Resources:
       CodeUri: src/convert_movie
       Handler: app.lambda_handler
       Runtime: python3.8
+      Layers:
+        - !Ref FFMPEGLambdaLayer
       Events:
         ProxyApiRoot:
           Type: Api
