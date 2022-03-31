@@ -17,7 +17,8 @@ deploy-api: build
 		--s3-bucket=${SANDBOX_API_APP_SAM_BUCKET} \
 		--parameter-overrides \
 			StageName=${SANDBOX_API_APP_STAGE} \
-			SwaggerBucket=s3://${SANDBOX_API_APP_SWAGGER_BUCKET}/swagger.yaml
+			SwaggerBucket=s3://${SANDBOX_API_APP_SWAGGER_BUCKET}/swagger.yaml \
+			ContentsBucketName=${SANDBOX_API_APP_CONTENTS_BUCKET}
 deploy: deploy-swagger deploy-api
 
 show-env:

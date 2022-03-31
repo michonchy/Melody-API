@@ -16,8 +16,33 @@ Parameters:
   StageName:
     Type: String
     Description: The API stage name
+  ContentsBucketName:
+    Type: String
+    Description: The API stage name
 
 Resources:
+  MelodyContentsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref ContentsBucketName
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - PUT
+              - POST
+              - DELETE
+            AllowedOrigins:
+              - '*'
+            ExposedHeaders:
+              - x-amz-server-side-encryption
+              - x-amz-request-id
+              - x-amz-id-2
+            Id: MelodyContentsBucketCORS
+            MaxAge: 3600
+         
+
   FFMPEGLambdaLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
@@ -45,6 +70,7 @@ Resources:
       CodeUri: src/upload_movie
       Handler: app.lambda_handler
       Runtime: python3.8
+
       Events:
         ProxyApiRoot:
           Type: Api
@@ -65,8 +91,12 @@ Resources:
       CodeUri: src/convert_movie
       Handler: app.lambda_handler
       Runtime: python3.8
+      Timeout: 60
       Layers:
         - !Ref FFMPEGLambdaLayer
+      Policies: 
+        - S3CrudPolicy:
+            BucketName: !Ref MelodyContentsBucket
       Events:
         ProxyApiRoot:
           Type: Api
@@ -81,6 +111,25 @@ Resources:
       FunctionName: !Ref ConvertMovieFunction
       Principal: apigateway.amazonaws.com
 
+  StartConvertMovieFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/start_convert_movie
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Events:
+        ProxyApiRoot:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SwaggerAPI
+            Path: /src/start_convert_movie
+            Method: GET
+  StartConvertMovieFunctionPermission:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref StartConvertMovieFunction
+      Principal: apigateway.amazonaws.com
   UpdateMovieFunction:
     Type: AWS::Serverless::Function
     Properties:

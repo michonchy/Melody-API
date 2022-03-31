@@ -1,15 +1,15 @@
 import json
-import subprocess
-import boto3
 
 # import requests
 
 # import ffmpeg
-def convert_movie_to_music(movie_path,music_path): 
-    proc = subprocess.run(f'/opt/bin/ffmpeg -i "{movie_path}" -vn -ac 2 -ar 44100 -ab 256k -acodec libmp3lame -f mp3 "{music_path}"', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    data = proc.stdout
-    return data
-
+# def convert_movie_to_music(movie_path,music_path): 
+#     # 入力
+#     stream = ffmpeg.input(movie_path)
+#     # 出力
+#     stream = ffmpeg.output(stream,music_path) 
+#     # 実行
+#     ffmpeg.run(stream)
 
 def lambda_handler(event, context):
     """Sample pure Lambda function
@@ -32,13 +32,6 @@ def lambda_handler(event, context):
 
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
-    s3 = boto3.resource('s3')
-    bucket = s3.Bucket("melody-api-app.development.movie-contents")
-    result=bucket.download_file("abc.3gpp","/tmp/abc.3gpp")
-    data = convert_movie_to_music("/tmp/abc.3gpp","/tmp/abc.mp3")
-    bucket.upload_file("/tmp/abc.mp3","abc.mp3")
-    
-
 
     # try:
     #     ip = requests.get("http://checkip.amazonaws.com/")
@@ -47,17 +40,8 @@ def lambda_handler(event, context):
     #     print(e)
 
     #     raise e
-    if event == None:
-        return {
-        "statusCode": 400,
-        "body": "No event",
-    }
-
-        
 
     return {
         "statusCode": 200,
-        "body": json.dumps({
-            "result":"success"
-        }),
+        "body": json.dumps(event),
     }

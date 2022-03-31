@@ -78,7 +78,7 @@ paths:
                 example: "doggie"
       x-amazon-apigateway-integration:
         uri:
-          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ConvertMovieFunction.Arn}/invocations
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${StartConvertMovieFunction.Arn}/invocations
         passthroughBehavior: when_no_templates
         httpMethod: POST
         type: aws_proxy

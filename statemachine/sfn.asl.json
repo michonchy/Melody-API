@@ -1,0 +1,14 @@
+{
+    "StartAt": "convert movie",
+    "States": {
+      "convert movie": {
+        "Type": "Task",
+        "Resource": "${LambdaFunction}",
+        "Next":"convert"
+      },"convert": {
+        "Type": "Task",
+        "Resource": "${LambdaFunction}",
+        "End": true
+      }
+    }
+  }
