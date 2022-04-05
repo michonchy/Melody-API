@@ -16,7 +16,7 @@ Parameters:
   StageName:
     Type: String
     Description: The API stage name
-  ContentsBucketName:
+  AppName:
     Type: String
     Description: The API stage name
 
@@ -24,7 +24,7 @@ Resources:
   MelodyContentsBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Ref ContentsBucketName
+      BucketName: !Sub ${AppName}.${StageName}.movie-contents
       CorsConfiguration:
         CorsRules:
           - AllowedHeaders:
@@ -41,8 +41,6 @@ Resources:
               - x-amz-id-2
             Id: MelodyContentsBucketCORS
             MaxAge: 3600
-         
-
   FFMPEGLambdaLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
@@ -70,7 +68,6 @@ Resources:
       CodeUri: src/upload_movie
       Handler: app.lambda_handler
       Runtime: python3.8
-
       Events:
         ProxyApiRoot:
           Type: Api
@@ -96,14 +93,19 @@ Resources:
         - !Ref FFMPEGLambdaLayer
       Policies: 
         - S3CrudPolicy:
-            BucketName: !Ref MelodyContentsBucket
+            BucketName: !Sub ${AppName}.${StageName}.movie-contents
       Events:
-        ProxyApiRoot:
-          Type: Api
+        S3Trigger:
+          Type: S3
           Properties:
-            RestApiId: !Ref SwaggerAPI
-            Path: /src/comvert_movie
-            Method: GET
+            Bucket: !Ref MelodyContentsBucket
+            Events: s3:ObjectCreated:*
+        # ProxyApiRoot:
+        #   Type: Api
+        #   Properties:
+        #     RestApiId: !Ref SwaggerAPI
+        #     Path: /src/comvert_movie
+        #     Method: GET
   ConvertMovieFunctionPermission:
     Type: "AWS::Lambda::Permission"
     Properties:

@@ -7,41 +7,7 @@ basePath: /${StageName}
 schemes:
   - "https"
 paths:
-  /movie/upload:
-    post:
-      tags:
-        - "movie"
-      summary: Root
-      description: 
-        Root Method.
-      consumes:
-        - multipart/form-data
-      produces:
-        - "application/json"
-      parameters:
-        - in: formData
-          name: upfile
-          type: file
-          description: The file to upload.
-          x-mimetype: movie/mp4
-      responses:
-        "201":
-          description: "動画ファイルが正常に登録された"
-          schema:
-            type: "object"
-            properties:
-              id:
-                type: "string"
-                description: "uuid"
-              name:
-                type: "string"
-                example: "doggie"
-      x-amazon-apigateway-integration:
-        uri:
-          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UploadMovieFunction.Arn}/invocations
-        passthroughBehavior: when_no_templates
-        httpMethod: POST
-        type: aws_proxy
+
   /movie/{usersId}/convert:
     put:
       tags:
