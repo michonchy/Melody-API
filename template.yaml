@@ -24,7 +24,7 @@ Resources:
   MelodyContentsBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub ${AppName}.${StageName}.movie-contents
+      BucketName: !Sub ${AppName}-${StageName}-movie-contents
       CorsConfiguration:
         CorsRules:
           - AllowedHeaders:
@@ -93,7 +93,7 @@ Resources:
         - !Ref FFMPEGLambdaLayer
       Policies: 
         - S3CrudPolicy:
-            BucketName: !Sub ${AppName}.${StageName}.movie-contents
+            BucketName: !Sub ${AppName}-${StageName}-movie-contents
       Events:
         S3Trigger:
           Type: S3
