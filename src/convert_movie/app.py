@@ -11,7 +11,7 @@ def convert_movie_to_music(movie_path,music_path):
     data = proc.stdout
     return data
 def download_tmp_path(s3_key: str):
-    return "tmp/"+s3_key.split("/")[-1]
+    return "/tmp/"+s3_key.split("/")[-1]
 
 def change_file_extension(s3_key):
     filename = s3_key.split("/")[-1]
