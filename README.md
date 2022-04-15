@@ -1,3 +1,3 @@
 # AWS SAM * OpenAPI
 
-![](.readme/header.png)
+![](.readme/architecture.png)
