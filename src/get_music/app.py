@@ -1,4 +1,5 @@
 import json
+import boto3
 
 # import requests
 
@@ -32,7 +33,15 @@ def lambda_handler(event, context):
 
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
     """
-
+    s3 = boto3.resource('s3')
+    bucket = s3.Bucket("melody-api-development-movie-contents")
+    objects = bucket.objects.all()
+    print(objects)
+    keys = []
+    for object in objects:
+        if object.key.startswith("music/"):
+            keys.append(object.key)
+    
     # try:
     #     ip = requests.get("http://checkip.amazonaws.com/")
     # except requests.RequestException as e:
@@ -43,5 +52,10 @@ def lambda_handler(event, context):
 
     return {
         "statusCode": 200,
-        "body": json.dumps(event),
+        "headers": {
+            "Access-Control-Allow-Headers" : "Content-Type",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "OPTIONS,GET"
+        },        
+        "body": json.dumps({"musics":keys}),
     }

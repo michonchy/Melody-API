@@ -62,25 +62,6 @@ Resources:
           Name: 'AWS::Include'
           Parameters:
             Location: !Ref 'SwaggerBucket'
-  UploadMovieFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: src/upload_movie
-      Handler: app.lambda_handler
-      Runtime: python3.8
-      Events:
-        ProxyApiRoot:
-          Type: Api
-          Properties:
-            RestApiId: !Ref SwaggerAPI
-            Path: /src/upload_movie
-            Method: GET
-  UploadMovieFunctionPermission:
-    Type: "AWS::Lambda::Permission"
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName: !Ref UploadMovieFunction
-      Principal: apigateway.amazonaws.com
 
   ConvertMovieFunction:
     Type: AWS::Serverless::Function
@@ -113,51 +94,15 @@ Resources:
       FunctionName: !Ref ConvertMovieFunction
       Principal: apigateway.amazonaws.com
 
-  StartConvertMovieFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: src/start_convert_movie
-      Handler: app.lambda_handler
-      Runtime: python3.8
-      Events:
-        ProxyApiRoot:
-          Type: Api
-          Properties:
-            RestApiId: !Ref SwaggerAPI
-            Path: /src/start_convert_movie
-            Method: GET
-  StartConvertMovieFunctionPermission:
-    Type: "AWS::Lambda::Permission"
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName: !Ref StartConvertMovieFunction
-      Principal: apigateway.amazonaws.com
-  UpdateMovieFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: src/update_movie
-      Handler: app.lambda_handler
-      Runtime: python3.8
-      Events:
-        ProxyApiRoot:
-          Type: Api
-          Properties:
-            RestApiId: !Ref SwaggerAPI
-            Path: /src/update_movie
-            Method: GET
-  UpdateMovieFunctionPermission:
-    Type: "AWS::Lambda::Permission"
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName: !Ref UpdateMovieFunction
-      Principal: apigateway.amazonaws.com
-
   GetMusicFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/get_music
       Handler: app.lambda_handler
       Runtime: python3.8
+      Policies: 
+        - S3CrudPolicy:
+            BucketName: !Sub ${AppName}-${StageName}-movie-contents      
       Events:
         ProxyApiRoot:
           Type: Api
